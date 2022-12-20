@@ -170,9 +170,10 @@ M._render_node = render_node
 ---@param opts WindowOpts
 ---@param sizes_only boolean Whether to only return properties that control the window size.
 local function create_popup_window_opts(opts, sizes_only)
+    local settings = require "mason.settings"
     local columns = vim.o.columns
-    local top_offset = 1
-    local height = vim.o.lines - vim.o.cmdheight - top_offset
+    local top_offset = settings.current.ui.top_offset or 1
+    local height = settings.current.ui.height or vim.o.lines - vim.o.cmdheight - top_offset
     local width = math.floor(columns * 0.8)
     local popup_layout = {
         height = height,

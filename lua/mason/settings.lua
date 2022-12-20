@@ -58,6 +58,12 @@ local DEFAULT_SETTINGS = {
         -- The border to use for the UI window. Accepts same border values as |nvim_open_win()|.
         border = "none",
 
+        -- popup height
+        height = vim.o.lines - vim.o.cmdheight,
+
+        -- top offset for popup
+        top_offset = 5,
+
         icons = {
             -- The list icon to use for installed packages.
             package_installed = "◍",
