@@ -6,12 +6,13 @@ describe("dotnet manager", function()
         "should call dotnet tool update",
         async_test(function()
             local handle = InstallHandleGenerator "dummy"
-            local ctx = InstallContextGenerator(handle, { requested_version = "42.13.37" })
+            local ctx = InstallContextGenerator(handle, { version = "42.13.37" })
             installer.exec_in_context(ctx, dotnet.package "main-package")
             assert.spy(ctx.spawn.dotnet).was_called(1)
             assert.spy(ctx.spawn.dotnet).was_called_with {
                 "tool",
                 "update",
+                "--ignore-failed-sources",
                 "--tool-path",
                 ".",
                 { "--version", "42.13.37" },
@@ -24,7 +25,7 @@ describe("dotnet manager", function()
         "should provide receipt information",
         async_test(function()
             local handle = InstallHandleGenerator "dummy"
-            local ctx = InstallContextGenerator(handle, { requested_version = "42.13.37" })
+            local ctx = InstallContextGenerator(handle, { version = "42.13.37" })
             installer.exec_in_context(ctx, dotnet.package "main-package")
             assert.same({
                 type = "dotnet",

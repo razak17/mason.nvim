@@ -1,5 +1,6 @@
 local health = vim.health or require "health"
 local a = require "mason-core.async"
+local async_uv = require "mason-core.async.uv"
 local platform = require "mason-core.platform"
 local github_client = require "mason-core.managers.github.client"
 local _ = require "mason-core.functional"
@@ -72,10 +73,12 @@ local function mk_healthcheck(callback)
             local healthcheck_result = spawn
                 [opts.cmd]({
                     opts.args,
-                    on_spawn = function(_, stdio)
+                    on_spawn = a.scope(function(_, stdio)
                         local stdin = stdio[1]
-                        stdin:close() -- some processes (`sh` for example) will endlessly read from stdin, so we close it immediately
-                    end,
+                        -- some processes (`sh` for example) will endlessly read from stdin, so we close it immediately
+                        async_uv.shutdown(stdin)
+                        async_uv.close(stdin)
+                    end),
                 })
                 :map(parse_version)
                 :map(function(version)
@@ -221,8 +224,16 @@ function M.check()
             relaxed = platform.is.win,
         },
         check { cmd = "tar", args = { "--version" }, name = "tar" },
-        -- when(platform.is.win, check { cmd = "powershell.exe", args = { "-Version" }, name = "PowerShell" }), -- TODO fix me
-        -- when(platform.is.win, check { cmd = "cmd.exe", args = { "-Version" }, name = "cmd" }) -- TODO fix me
+        check {
+            cmd = "pwsh",
+            args = {
+                "-NoProfile",
+                "-Command",
+                [[$PSVersionTable.PSVersion, $PSVersionTable.OS, $PSVersionTable.Platform -join " "]],
+            },
+            name = "pwsh",
+            relaxed = not platform.is.win,
+        },
     }
 
     if platform.is.unix then

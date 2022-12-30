@@ -50,4 +50,27 @@ Ipsum
         assert.equals("HELLO!", _.to_upper "Hello!")
         assert.equals("hello!", _.to_lower "Hello!")
     end)
+
+    it("trim strings", function()
+        assert.equals("HELLO!", _.trim "   HELLO!  ")
+    end)
+
+    it("should trim_start strings", function()
+        assert.equals("HELLO!  ", _.trim_start_matches("%s", "	   HELLO!  "))
+    end)
+
+    it("should trim_end strings", function()
+        assert.equals("	   HELLO!", _.trim_end_matches("%s", "	   HELLO!  "))
+    end)
+
+    it("should strip_prefix", function()
+        assert.equals("withthewind", _.strip_prefix("gone", "gonewiththewind"))
+        assert.equals("1.3.0", _.strip_prefix("v", "v1.3.0"))
+    end)
+
+    it("should strip_suffix", function()
+        assert.equals("gone", _.strip_suffix("withtthewind", "gonewithtthewind"))
+        assert.equals("name", _.strip_suffix("%.tar%.gz", "name.tar.gz"))
+        assert.equals("name", _.strip_suffix(".tar.*", "name.tar.gz"))
+    end)
 end)
